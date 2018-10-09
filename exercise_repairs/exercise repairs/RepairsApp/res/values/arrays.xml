@@ -1,0 +1,10 @@
+<resources>
+
+    <string-array name="states">
+        <item>New</item>
+        <item>No intervention</item>
+        <item>Pending</item>
+        <item>Solved</item>
+    </string-array>
+
+</resources>
