@@ -11,6 +11,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 import edu.upc.whatsapp.comms.RPC;
 import edu.upc.whatsapp.adapter.MyAdapter_users;
+import entity.Message;
 import entity.UserInfo;
 import java.util.List;
 
@@ -46,9 +47,20 @@ public class d_UsersListActivity extends Activity implements ListView.OnItemClic
     @Override
     protected List<UserInfo> doInBackground(Void... nothing) {
 
+      /*
+      Message msg = handler.obtainMessage();
+      Bundle b = new Bundle();
+
+      UserInfo userInfo = RPC.login(user);
+      b.putSerializable("userInfo", userInfo);
+
+      msg.setData(b);
+      handler.sendMessage(msg);
+      */
       //...
       //remove this sentence on completing the code:
-      return null;
+
+      return RPC.allUserInfos();
 
     }
 
@@ -60,6 +72,9 @@ public class d_UsersListActivity extends Activity implements ListView.OnItemClic
       } else {
 
         //...
+        adapter = new MyAdapter_users(d_UsersListActivity.this,users);
+        ListView listView = (ListView) findViewById(R.id.listView);
+        listView.setAdapter(adapter);
 
       }
     }

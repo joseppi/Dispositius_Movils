@@ -1,0 +1,115 @@
+{
+    "logs": [
+        {
+            "outputFile": "C:\\Users\\josepps14\\Documents\\GitHub\\Dispositius_Movils\\RepairsApp\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values\\values.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\josepps14\\.gradle\\caches\\transforms-1\\files-1.1\\play-services-4.0.30.aar\\c634160dc90855d512561a7d73452455\\res\\values\\colors.xml",
+                    "from": {
+                        "startLines": "12,3,5,6,4,11,7,9,10,8",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "789,90,256,329,173,716,412,569,643,485",
+                        "endColumns": "60,82,72,82,82,72,72,73,72,83",
+                        "endOffsets": "845,168,324,407,251,784,480,638,711,564"
+                    },
+                    "to": {
+                        "startLines": "9,10,11,12,13,14,15,16,17,18",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "317,378,461,534,617,700,773,846,920,993",
+                        "endColumns": "60,82,72,82,82,72,72,73,72,83",
+                        "endOffsets": "373,456,529,612,695,768,841,915,988,1072"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\josepps14\\Documents\\GitHub\\Dispositius_Movils\\RepairsApp\\app\\src\\main\\res\\values\\colors.xml",
+                    "from": {
+                        "startLines": "5,7,4,6",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "98,178,57,138",
+                        "endColumns": "39,38,40,39",
+                        "endOffsets": "133,212,93,173"
+                    },
+                    "to": {
+                        "startLines": "8,19,20,21",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "277,1077,1116,1157",
+                        "endColumns": "39,38,40,39",
+                        "endOffsets": "312,1111,1152,1192"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\josepps14\\Documents\\GitHub\\Dispositius_Movils\\RepairsApp\\app\\src\\main\\res\\values\\arrays.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "17",
+                        "endLines": "7",
+                        "endColumns": "19",
+                        "endOffsets": "184"
+                    },
+                    "to": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "105",
+                        "endLines": "7",
+                        "endColumns": "19",
+                        "endOffsets": "272"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\josepps14\\.gradle\\caches\\transforms-1\\files-1.1\\play-services-4.0.30.aar\\c634160dc90855d512561a7d73452455\\res\\values\\version.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "66",
+                        "endOffsets": "117"
+                    },
+                    "to": {
+                        "startLines": "30",
+                        "startColumns": "4",
+                        "startOffsets": "2211",
+                        "endColumns": "66",
+                        "endOffsets": "2273"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\josepps14\\Documents\\GitHub\\Dispositius_Movils\\RepairsApp\\app\\src\\main\\res\\values\\strings.xml",
+                    "from": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "57,106",
+                        "endColumns": "47,46",
+                        "endOffsets": "100,148"
+                    },
+                    "to": {
+                        "startLines": "31,66",
+                        "startColumns": "4,4",
+                        "startOffsets": "2278,5709",
+                        "endColumns": "47,46",
+                        "endOffsets": "2321,5751"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\josepps14\\.gradle\\caches\\transforms-1\\files-1.1\\play-services-4.0.30.aar\\c634160dc90855d512561a7d73452455\\res\\values\\strings.xml",
+                    "from": {
+                        "startLines": "84,89,94,99,102,79,29,24,20,16,9,13,5,49,46,43,40,53,63,59,56,66,37,33,69,72",
+                        "startColumns": "2,2,2,2,2,2,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "5879,6146,6417,6641,6835,5600,2094,1727,1451,1180,541,894,254,3582,3367,3109,2906,3883,4734,4359,4127,4991,2641,2366,5146,5268",
+                        "endLines": "86,91,96,99,102,81,29,24,20,16,9,13,5,49,46,43,40,53,63,59,56,66,37,33,69,72",
+                        "endColumns": "11,11,11,99,105,11,125,155,124,123,187,189,122,164,93,140,89,110,162,216,94,104,155,124,61,78",
+                        "endOffsets": "6005,6278,6541,6738,6938,5740,2215,1878,1571,1299,724,1079,372,3742,3456,3245,2991,3989,4892,4571,4217,5091,2792,2486,5203,5342"
+                    },
+                    "to": {
+                        "startLines": "32,35,38,41,42,43,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "2326,2457,2594,2723,2825,2929,3074,3200,3356,3481,3605,3793,3983,4106,4271,4365,4506,4596,4707,4870,5087,5182,5287,5443,5568,5630",
+                        "endLines": "34,37,40,41,42,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65",
+                        "endColumns": "11,11,11,101,103,11,125,155,124,123,187,189,122,164,93,140,89,110,162,216,94,104,155,124,61,78",
+                        "endOffsets": "2452,2589,2718,2820,2924,3069,3195,3351,3476,3600,3788,3978,4101,4266,4360,4501,4591,4702,4865,5082,5177,5282,5438,5563,5625,5704"
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="edu.upc.repairs"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:maxSdkVersion="17"
+        android:minSdkVersion="17"
+        android:targetSdkVersion="17" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <!-- for google maps: -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- for gps usage: -->
+    <uses-permission android:name="android.permission.ACCESS_GPS" />
+    <uses-permission android:name="android.permission.ACCESS_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!--
+     for the action bar to be shown we have to use a Holo style and
+         is better to add android:icon as always shown on the left corner
+    -->
+    <application
+        android:name="edu.upc.repairs._GlobalState"
+        android:debuggable="true"
+        android:hardwareAccelerated="true"
+        android:icon="@drawable/app_logo"
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.Holo.Light" >
+        <activity
+            android:name="edu.upc.repairs.a_WelcomeActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="edu.upc.repairs.b_LoginActivity"
+            android:label="Login Form"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Dialog" />
+        <activity
+            android:name="edu.upc.repairs.c_RegistrationActivity"
+            android:label="Sign up Form"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name="edu.upc.repairs.d_WorkOrdersActivity_1"
+            android:label="WorkOrders" />
+        <activity
+            android:name="edu.upc.repairs.d_WorkOrdersActivity_2_websocket"
+            android:label="WorkOrders" />
+        <activity
+            android:name="edu.upc.repairs.d_WorkOrdersActivity_3_broadcast_receiver"
+            android:label="WorkOrders" />
+        <activity
+            android:name="edu.upc.repairs.e_DetailsActivity"
+            android:label="Details"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name="edu.upc.repairs.f_GoogleMapsActivity"
+            android:label="Map View" />
+
+        <service android:name="edu.upc.repairs.service.PushService" />
+        <service android:name="edu.upc.repairs.service.LocationService" />
+
+        <!-- due to Google Maps API v2 -->
+
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="AIzaSyA-0gJYHsyXAtjycdCF-I22qiikCb_pcso" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+    </application>
+
+</manifest>
