@@ -11,9 +11,101 @@
                   android:layout_height="fill_parent"
                   android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/editregistrationLoginTextView"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dip"
+            android:layout_marginTop="10dip"
+            android:text="Login:"
+            android:textColor="@color/orange"
+            android:textSize="22sp"/>
 
+        <EditText
+            android:id="@+id/editregistrationLoginEditText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="10dip"
+            android:maxLines="1"
+            android:singleLine="true"/>
 
+        <TextView
+            android:id="@+id/editregistrationPasswordTextView"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dip"
+            android:layout_marginTop="10dip"
+            android:text="Password:"
+            android:textColor="@color/orange"
+            android:textSize="22sp"/>
 
+        <EditText
+            android:id="@+id/editregistrationPasswordEditText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="10dip"
+            android:maxLines="1"
+            android:password="true"
+            android:singleLine="true"/>
+
+        <TextView
+            android:id="@+id/editregistrationNameTextView"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dip"
+            android:layout_marginTop="10dip"
+            android:text="Name:"
+            android:textColor="@color/orange"
+            android:textSize="22sp"/>
+
+        <EditText
+            android:id="@+id/editregistrationNameEditText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="10dip"
+            android:maxLines="1"
+            android:singleLine="true"/>
+
+        <TextView
+            android:id="@+id/editregistrationSurnameTextView"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dip"
+            android:layout_marginTop="10dip"
+            android:text="Surname:"
+            android:textColor="@color/orange"
+            android:textSize="22sp"/>
+
+        <EditText
+            android:id="@+id/editregistrationSurnameEditText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="10dip"
+            android:maxLines="1"
+            android:singleLine="true"/>
+
+        <TextView
+            android:id="@+id/editregistrationEmailTextView"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dip"
+            android:layout_marginTop="10dip"
+            android:text="e-mail:"
+            android:textColor="@color/orange"
+            android:textSize="22sp"/>
+
+        <EditText
+            android:id="@+id/editregistrationEmailEditText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="10dip"
+            android:maxLines="1"
+            android:singleLine="true"/>
 
         <Button
             android:id="@+id/editregistrationButton"
