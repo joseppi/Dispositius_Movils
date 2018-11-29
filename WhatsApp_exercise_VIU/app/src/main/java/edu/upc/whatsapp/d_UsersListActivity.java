@@ -26,6 +26,7 @@ public class d_UsersListActivity extends Activity implements ListView.OnItemClic
     super.onCreate(savedInstanceState);
     globalState = (_GlobalState) getApplication();
     setContentView(R.layout.d_userslist);
+
     new DownloadUsers_Task().execute();
   }
 
@@ -33,7 +34,8 @@ public class d_UsersListActivity extends Activity implements ListView.OnItemClic
   public void onItemClick(AdapterView<?> l, View v, int position, long id) {
 
     //...
-
+    globalState.user_to_talk_to = ((MyAdapter_users) l.getAdapter()).users.get(position);
+    startActivity(new Intent(this, e_MessagesActivity_2_websocket.class));
   }
 
   private class DownloadUsers_Task extends AsyncTask<Void, Void, List<UserInfo>> {
@@ -47,16 +49,6 @@ public class d_UsersListActivity extends Activity implements ListView.OnItemClic
     @Override
     protected List<UserInfo> doInBackground(Void... nothing) {
 
-      /*
-      Message msg = handler.obtainMessage();
-      Bundle b = new Bundle();
-
-      UserInfo userInfo = RPC.login(user);
-      b.putSerializable("userInfo", userInfo);
-
-      msg.setData(b);
-      handler.sendMessage(msg);
-      */
       //...
       //remove this sentence on completing the code:
 
@@ -73,8 +65,12 @@ public class d_UsersListActivity extends Activity implements ListView.OnItemClic
 
         //...
         adapter = new MyAdapter_users(d_UsersListActivity.this,users);
+
+        adapter.users.remove(globalState.my_user);
+
         ListView listView = (ListView) findViewById(R.id.listView);
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(d_UsersListActivity.this);
 
       }
     }

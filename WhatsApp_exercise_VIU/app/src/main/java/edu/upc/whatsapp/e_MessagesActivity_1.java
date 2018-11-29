@@ -49,7 +49,10 @@ public class e_MessagesActivity_1 extends Activity {
     globalState = (_GlobalState) getApplication();
     TextView title = (TextView) findViewById(R.id.title);
     title.setText("Talking with: " + globalState.user_to_talk_to.getName());
+    conversation = (ListView)findViewById(R.id.conversation);
     setup_input_text();
+
+    timer = new Timer();
 
     new fetchAllMessages_Task().execute(globalState.my_user.getId(), globalState.user_to_talk_to.getId());
   }
@@ -59,6 +62,7 @@ public class e_MessagesActivity_1 extends Activity {
     super.onResume();
 
     //...
+    timer.scheduleAtFixedRate(new fetchNewMessagesTimerTask(), 10000, 10000);
 
   }
 
@@ -67,6 +71,7 @@ public class e_MessagesActivity_1 extends Activity {
     super.onPause();
 
     //...
+    timer.cancel();
 
   }
 
@@ -82,9 +87,8 @@ public class e_MessagesActivity_1 extends Activity {
     protected List<Message> doInBackground(Integer... userIds) {
 
       //...
-
       //remove this sentence on completing the code:
-      return null;
+      return RPC.retrieveMessages(globalState.my_user.getId(),globalState.user_to_talk_to.getId());
     }
 
     @Override
@@ -94,6 +98,9 @@ public class e_MessagesActivity_1 extends Activity {
         toastShow("There's been an error downloading the messages");
       } else {
         toastShow(all_messages.size()+" messages downloaded");
+        adapter = new MyAdapter_messages(e_MessagesActivity_1.this,all_messages,globalState.my_user);
+        ListView listView = (ListView) findViewById(R.id.conversation);
+        listView.setAdapter(adapter);
 
         //...
 
@@ -107,9 +114,18 @@ public class e_MessagesActivity_1 extends Activity {
     protected List<Message> doInBackground(Integer... userIds) {
 
       //...
+      if (adapter.isEmpty())
+      {
+        return RPC.retrieveMessages(globalState.my_user.getId(),globalState.user_to_talk_to.getId());
+      }
+      else
+      {
+
+        return RPC.retrieveNewMessages(globalState.my_user.getId(),globalState.user_to_talk_to.getId(),adapter.getLastMessage());
+      }
 
       //remove this sentence on completing the code:
-      return null;
+
     }
 
     @Override
@@ -118,7 +134,14 @@ public class e_MessagesActivity_1 extends Activity {
         toastShow("There's been an error downloading new messages");
       } else {
         toastShow(new_messages.size()+" new message/s downloaded");
-
+        adapter.addMessages(new_messages);
+        adapter.notifyDataSetChanged();
+        conversation.post(new Runnable(){
+          @Override
+                  public void run(){
+            conversation.setSelection(conversation.getCount()-1);
+          }
+        });
         //...
 
       }
@@ -126,8 +149,14 @@ public class e_MessagesActivity_1 extends Activity {
   }
 
   public void sendText(final View view) {
-
     //...
+    Message message = new Message();
+
+    message.setContent(input_text.getText().toString());
+    message.setUserReceiver(globalState.user_to_talk_to);
+    message.setUserSender(globalState.my_user);
+    message.setDate(new Date());
+    new SendMessage_Task().execute(message);
 
     input_text.setText("");
 
@@ -146,9 +175,8 @@ public class e_MessagesActivity_1 extends Activity {
     protected Boolean doInBackground(Message... messages) {
 
       //...
-
       //remove this sentence on completing the code:
-      return false;
+      return RPC.postMessage(messages[0]);
     }
 
     @Override
@@ -156,6 +184,7 @@ public class e_MessagesActivity_1 extends Activity {
       if (resultOk) {
         toastShow("message sent");
 
+        new fetchNewMessages_Task().execute(globalState.my_user.getId(),globalState.user_to_talk_to.getId());
         //...
 
       } else {
@@ -170,7 +199,7 @@ public class e_MessagesActivity_1 extends Activity {
     public void run() {
 
       //...
-
+      new fetchNewMessages_Task().execute(globalState.my_user.getId(), globalState.user_to_talk_to.getId());
     }
   }
 
@@ -184,15 +213,20 @@ public class e_MessagesActivity_1 extends Activity {
     input_text.addTextChangedListener(new TextWatcher() {
 
       public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+
+
       }
 
       public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+
+
       }
 
       public void afterTextChanged(Editable arg0) {
         if (arg0.toString().equals("")) {
           button.setEnabled(false);
-        } else {
+        }
+        else {
           button.setEnabled(true);
         }
       }
@@ -224,6 +258,8 @@ public class e_MessagesActivity_1 extends Activity {
           input_text.setLayoutParams(layoutparams);
           enlarged = true;
           shrunk = false;
+
+          //Get to the bottom of the list view
           conversation.post(new Runnable() {
             @Override
             public void run() {

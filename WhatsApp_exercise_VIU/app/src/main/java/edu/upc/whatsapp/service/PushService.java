@@ -200,6 +200,12 @@ public class PushService extends Service {
       String type = msg.getData().getCharSequence("type").toString();
       String content = msg.getData().getCharSequence("content").toString();
       if(type.equals("message")){
+        Message message = gson.fromJson(content, Message.class);
+        // send a broadcast message using: content as needed.
+        // if I'm not talking with anybody or the sender of the message is not
+        // with whom I'm talking now or the messages screen is not on the
+        // frontend: send a status-bar notification.
+
 
         //...
 

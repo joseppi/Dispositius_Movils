@@ -1,5 +1,6 @@
 package edu.upc.whatsapp;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -29,6 +30,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.websocket.ClientEndpointConfig;
 import javax.websocket.CloseReason;
@@ -40,6 +42,7 @@ import javax.websocket.Session;
 import edu.upc.whatsapp.adapter.MyAdapter_messages;
 import edu.upc.whatsapp.comms.RPC;
 import entity.Message;
+import entity.UserInfo;
 
 import static edu.upc.whatsapp.comms.Comms.ENDPOINT;
 import static edu.upc.whatsapp.comms.Comms.gson;
@@ -61,6 +64,7 @@ public class e_MessagesActivity_2_websocket extends Activity {
     globalState = (_GlobalState) getApplication();
     TextView title = (TextView) findViewById(R.id.title);
     title.setText("Talking with: " + globalState.user_to_talk_to.getName());
+    conversation = (ListView)findViewById(R.id.conversation);
     setup_input_text();
 
     new fetchAllMessages_Task().execute(globalState.my_user.getId(), globalState.user_to_talk_to.getId());
@@ -110,10 +114,34 @@ public class e_MessagesActivity_2_websocket extends Activity {
   public class MyEndPoint extends Endpoint {
 
     @Override
-    public void onOpen(Session session, EndpointConfig EndpointConfig) {
+    public void onOpen(final Session session, EndpointConfig EndpointConfig) {
       try {
-
         //...
+        // Exercice
+        // send in json format your UserInfo to the server using the
+        // WebSocket session.
+        // save the session to be able to close it when needed.
+        // send a message using the handler to indicate that the connection to the server is now open.
+        // Example: Message message = gson.fromJson(content,Message.class);
+
+        UserInfo userInfo = globalState.my_user;
+        String userInfoGson = gson.toJson(userInfo);
+        session.getBasicRemote().sendText(userInfoGson);
+
+        //userInfo = gson.toJson(userInfo);
+
+        e_MessagesActivity_2_websocket.this.session = session;
+
+        session.addMessageHandler(new MessageHandler.Whole<String>()
+        {
+          @Override
+          public void onMessage(String message)
+          {
+            //send the newly received message using the handler.
+            sendMessageToHandler("message",message);
+          }
+        }
+        );
 
       }
       catch (Exception e) {
@@ -145,14 +173,42 @@ public class e_MessagesActivity_2_websocket extends Activity {
     handler.sendMessage(msg);
   }
 
+  @SuppressLint("HandlerLeak")
   Handler handler = new Handler() {
     @Override
     public void handleMessage(android.os.Message msg) {
       String type = msg.getData().getCharSequence("type").toString();
       String content = msg.getData().getCharSequence("content").toString();
       if(type.equals("message")){
-
         //...
+        // if the sender of the message is with whom I am talking now:
+        // add the message to the adapter
+        // notify a data change at the adapter
+        // make a ListView scroll to see the new message
+
+        // if not:
+        // show a popup window with sender and content of the received message
+
+        Message message = gson.fromJson(content,Message.class);
+        if (message.getUserSender().getId() == globalState.user_to_talk_to.getId())
+        {
+          adapter.addMessage(message);
+          adapter.notifyDataSetChanged();
+
+          //Get to the bottom of the list view
+          conversation.post(new Runnable() {
+            @Override
+            public void run() {
+              conversation.setSelection(conversation.getCount() - 1);
+            }
+          });
+
+        }
+        else
+        {
+          toastShow(message.getUserSender().getName() + "\n" + message.getContent());
+        }
+
 
       }
       else{
@@ -175,7 +231,7 @@ public class e_MessagesActivity_2_websocket extends Activity {
       //...
 
       //remove this sentence on completing the code:
-      return null;
+      return RPC.retrieveMessages(globalState.my_user.getId(),globalState.user_to_talk_to.getId());
     }
 
     @Override
@@ -185,7 +241,15 @@ public class e_MessagesActivity_2_websocket extends Activity {
         toastShow("There's been an error downloading the messages");
       } else {
         toastShow(all_messages.size()+" messages downloaded");
-
+        adapter = new MyAdapter_messages(e_MessagesActivity_2_websocket.this,all_messages,globalState.my_user);
+        ListView listView = (ListView) findViewById(R.id.conversation);
+        listView.setAdapter(adapter);
+        conversation.post(new Runnable(){
+          @Override
+          public void run(){
+            conversation.setSelection(conversation.getCount()-1);
+          }
+        });
         //...
 
       }
@@ -198,9 +262,17 @@ public class e_MessagesActivity_2_websocket extends Activity {
     protected List<Message> doInBackground(Integer... userIds) {
 
       //...
+      if (adapter.isEmpty())
+      {
+        return RPC.retrieveMessages(globalState.my_user.getId(),globalState.user_to_talk_to.getId());
+      }
+      else
+      {
 
+        return RPC.retrieveNewMessages(globalState.my_user.getId(),globalState.user_to_talk_to.getId(),adapter.getLastMessage());
+      }
       //remove this sentence on completing the code:
-      return null;
+
     }
 
     @Override
@@ -209,7 +281,14 @@ public class e_MessagesActivity_2_websocket extends Activity {
         toastShow("There's been an error downloading new messages");
       } else {
         toastShow(new_messages.size()+" new message/s downloaded");
-
+        adapter.addMessages(new_messages);
+        adapter.notifyDataSetChanged();
+        conversation.post(new Runnable(){
+          @Override
+          public void run(){
+            conversation.setSelection(conversation.getCount()-1);
+          }
+        });
         //...
 
       }
@@ -219,6 +298,13 @@ public class e_MessagesActivity_2_websocket extends Activity {
   public void sendText(final View view) {
 
     //...
+    Message message = new Message();
+
+    message.setContent(input_text.getText().toString());
+    message.setUserReceiver(globalState.user_to_talk_to);
+    message.setUserSender(globalState.my_user);
+    message.setDate(new Date());
+    new SendMessage_Task().execute(message);
 
     input_text.setText("");
 
@@ -239,7 +325,7 @@ public class e_MessagesActivity_2_websocket extends Activity {
       //...
 
       //remove this sentence on completing the code:
-      return false;
+      return RPC.postMessage(messages[0]);
     }
 
     @Override
@@ -247,6 +333,7 @@ public class e_MessagesActivity_2_websocket extends Activity {
       if (resultOk) {
         toastShow("message sent");
 
+        new fetchNewMessages_Task().execute(globalState.my_user.getId(),globalState.user_to_talk_to.getId());
         //...
 
       } else {

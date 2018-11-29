@@ -51,6 +51,13 @@ public class e_MessagesActivity_3_broadcast_receiver extends Activity {
 
     //para cuando venimos de la notificacion de status-bar:
     Intent intent = getIntent();
+    //to be executed when coming from a status-bar notification:
+
+    //if( /* the intent contains an extra content with name message*/ ){
+    // retrieve that message to know who sent you that message,
+    // and save his/her identity where needed.
+    //}
+
     if(intent.getExtras()!=null && intent.getExtras().get("message")!=null){
 
       //...
@@ -66,6 +73,14 @@ public class e_MessagesActivity_3_broadcast_receiver extends Activity {
       public void onReceive(Context arg0, Intent arg1) {
 
         //...
+        String json = (String)arg1.getExtras().get("message");
+        Message message = gson.fromJson(json, Message.class);
+        // if the sender of the message is with whom I am talking now:
+        // add the message to the adapter
+        // notify a data change at the adapter
+        // make a ListView scroll to see the new message
+        // if not:
+        // show a popup window with sender and content of the received message.
 
       }
     };
@@ -79,7 +94,7 @@ public class e_MessagesActivity_3_broadcast_receiver extends Activity {
   @Override
   protected void onResume() {
     super.onResume();
-
+    globalState.MessagesActivity_visible = true;
     //...
 
   }
@@ -87,7 +102,7 @@ public class e_MessagesActivity_3_broadcast_receiver extends Activity {
   @Override
   protected void onPause() {
     super.onPause();
-
+    globalState.MessagesActivity_visible = false;
     //...
 
   }
@@ -114,7 +129,7 @@ public class e_MessagesActivity_3_broadcast_receiver extends Activity {
       //...
 
       //remove this sentence on completing the code:
-      return null;
+      return RPC.retrieveMessages(globalState.my_user.getId(),globalState.user_to_talk_to.getId());
     }
 
     @Override
@@ -124,9 +139,15 @@ public class e_MessagesActivity_3_broadcast_receiver extends Activity {
         toastShow("There's been an error downloading the messages");
       } else {
         toastShow(all_messages.size()+" messages downloaded");
-
-        //...
-
+        adapter = new MyAdapter_messages(e_MessagesActivity_3_broadcast_receiver.this,all_messages,globalState.my_user);
+        ListView listView = (ListView) findViewById(R.id.conversation);
+        listView.setAdapter(adapter);
+        conversation.post(new Runnable(){
+          @Override
+          public void run(){
+            conversation.setSelection(conversation.getCount()-1);
+          }
+        });
       }
     }
   }
@@ -136,10 +157,15 @@ public class e_MessagesActivity_3_broadcast_receiver extends Activity {
     @Override
     protected List<Message> doInBackground(Integer... userIds) {
 
-      //...
+      if (adapter.isEmpty())
+      {
+        return RPC.retrieveMessages(globalState.my_user.getId(),globalState.user_to_talk_to.getId());
+      }
+      else
+      {
 
-      //remove this sentence on completing the code:
-      return null;
+        return RPC.retrieveNewMessages(globalState.my_user.getId(),globalState.user_to_talk_to.getId(),adapter.getLastMessage());
+      }
     }
 
     @Override
@@ -148,7 +174,14 @@ public class e_MessagesActivity_3_broadcast_receiver extends Activity {
         toastShow("There's been an error downloading new messages");
       } else {
         toastShow(new_messages.size()+" new message/s downloaded");
-
+        adapter.addMessages(new_messages);
+        adapter.notifyDataSetChanged();
+        conversation.post(new Runnable(){
+          @Override
+          public void run(){
+            conversation.setSelection(conversation.getCount()-1);
+          }
+        });
         //...
 
       }
@@ -158,6 +191,14 @@ public class e_MessagesActivity_3_broadcast_receiver extends Activity {
   public void sendText(final View view) {
 
     //...
+
+    Message message = new Message();
+
+    message.setContent(input_text.getText().toString());
+    message.setUserReceiver(globalState.user_to_talk_to);
+    message.setUserSender(globalState.my_user);
+    message.setDate(new Date());
+    new e_MessagesActivity_3_broadcast_receiver.SendMessage_Task().execute(message);
 
     input_text.setText("");
 
@@ -178,7 +219,7 @@ public class e_MessagesActivity_3_broadcast_receiver extends Activity {
       //...
 
       //remove this sentence on completing the code:
-      return false;
+      return RPC.postMessage(messages[0]);
     }
 
     @Override
@@ -186,6 +227,7 @@ public class e_MessagesActivity_3_broadcast_receiver extends Activity {
       if (resultOk) {
         toastShow("message sent");
 
+        new e_MessagesActivity_3_broadcast_receiver.fetchNewMessages_Task().execute(globalState.my_user.getId(),globalState.user_to_talk_to.getId());
         //...
 
       } else {

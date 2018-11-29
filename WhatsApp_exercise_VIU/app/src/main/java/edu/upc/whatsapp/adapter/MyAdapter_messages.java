@@ -80,11 +80,10 @@ public class MyAdapter_messages extends BaseAdapter {
     else
       convertView.findViewById(R.id.row_date).setVisibility(View.GONE);
     ((TextView) convertView.findViewById(R.id.row_date)).setText(sdf.format(date));
-
-    //...
-
+    ((TextView) convertView.findViewById(R.id.row_content)).setText(messages.get(position).getContent());
     ((TextView) convertView.findViewById(R.id.row_hour)).setText(sdf2.format(date));
 
+    //... Data Contingut i hora
     return convertView;
   }
 
@@ -101,7 +100,12 @@ public class MyAdapter_messages extends BaseAdapter {
 
     //...
     //remove this sentence on completing the code:
-    return -1;
+    if (messages.get(position).getUserSender().getId() == my_user.getId())
+    {
+      return 0;
+    }
+    else
+      return 1;
 
   }
 
