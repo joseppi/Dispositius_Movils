@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -33,9 +34,11 @@ import javax.websocket.Session;
 
 import edu.upc.whatsapp.R;
 import edu.upc.whatsapp._GlobalState;
+import edu.upc.whatsapp.e_MessagesActivity_2_websocket;
 import edu.upc.whatsapp.e_MessagesActivity_3_broadcast_receiver;
 import edu.upc.whatsapp.e_MessagesActivity_4_broadcast_and_persistence;
 import entity.Message;
+import entity.UserInfo;
 
 import static edu.upc.whatsapp.comms.Comms.ENDPOINT;
 import static edu.upc.whatsapp.comms.Comms.gson;
@@ -157,7 +160,25 @@ public class PushService extends Service {
     @Override
     public void onOpen(Session session, EndpointConfig EndpointConfig) {
       try {
+        UserInfo userInfo = globalState.my_user;
+        String userInfoGson = gson.toJson(userInfo);
+        session.getBasicRemote().sendText(userInfoGson);
 
+        //userInfo = gson.toJson(userInfo);
+
+        PushService.this.session = session;
+
+        session.addMessageHandler(
+          new MessageHandler.Whole<String>()
+           {
+             @Override
+             public void onMessage(String message)
+             {
+               //send the newly received message using the handler.
+               sendMessageToHandler("message",message);
+             }
+           }
+        );
         //...
 
       }
@@ -205,10 +226,15 @@ public class PushService extends Service {
         // if I'm not talking with anybody or the sender of the message is not
         // with whom I'm talking now or the messages screen is not on the
         // frontend: send a status-bar notification.
-
-
+        Intent intent = new Intent();
+        intent.setAction("edu.upc.whatsapp.newMessage");
+        intent.putExtra("message",content);
+        sendBroadcast(intent);
+        if (message.getUserSender() != globalState.user_to_talk_to)
+        {
+          sendPushNotification(PushService.this,message.getContent(),content);
+        }
         //...
-
       }
       else{
         toastShow(content);

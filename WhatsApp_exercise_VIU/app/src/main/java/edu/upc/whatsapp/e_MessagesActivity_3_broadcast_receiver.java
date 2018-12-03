@@ -48,20 +48,21 @@ public class e_MessagesActivity_3_broadcast_receiver extends Activity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.e_messages);
     globalState = (_GlobalState) getApplication();
+    conversation = (ListView)findViewById(R.id.conversation);
 
     //para cuando venimos de la notificacion de status-bar:
     Intent intent = getIntent();
     //to be executed when coming from a status-bar notification:
 
-    //if( /* the intent contains an extra content with name message*/ ){
-    // retrieve that message to know who sent you that message,
-    // and save his/her identity where needed.
-    //}
-
-    if(intent.getExtras()!=null && intent.getExtras().get("message")!=null){
-
+    if(intent.getExtras()!= null && intent.getExtras().get("message")!=null)
+    {
+      // retrieve that message to know who sent you that message,
+      // and save his/her identity where needed.
       //...
 
+      String content = (String)intent.getExtras().get("message");
+      Message message = gson.fromJson(content,Message.class);
+      globalState.user_to_talk_to = message.getUserSender();
     }
 
     TextView title = (TextView) findViewById(R.id.title);
@@ -75,6 +76,30 @@ public class e_MessagesActivity_3_broadcast_receiver extends Activity {
         //...
         String json = (String)arg1.getExtras().get("message");
         Message message = gson.fromJson(json, Message.class);
+        adapter.addMessage(message);
+        adapter.notifyDataSetChanged();
+
+        if (message.getUserSender() == globalState.user_to_talk_to)
+        {
+          // Go to last message
+          conversation.post(new Runnable() {
+            @Override
+            public void run() {
+              conversation.setSelection(conversation.getCount() - 1);
+            }
+          });
+
+        }
+        else
+        {
+          conversation.post(new Runnable(){
+            @Override
+            public void run(){
+              conversation.setSelection(conversation.getCount()-1);
+            }
+          });
+          toastShow(message.getUserSender().getName().toString() + "told you" + message.getContent().toString());
+        }
         // if the sender of the message is with whom I am talking now:
         // add the message to the adapter
         // notify a data change at the adapter
