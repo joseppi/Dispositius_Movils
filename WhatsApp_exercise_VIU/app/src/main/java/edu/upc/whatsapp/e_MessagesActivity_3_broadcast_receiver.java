@@ -50,16 +50,10 @@ public class e_MessagesActivity_3_broadcast_receiver extends Activity {
     globalState = (_GlobalState) getApplication();
     conversation = (ListView)findViewById(R.id.conversation);
 
-    //para cuando venimos de la notificacion de status-bar:
     Intent intent = getIntent();
-    //to be executed when coming from a status-bar notification:
 
     if(intent.getExtras()!= null && intent.getExtras().get("message")!=null)
     {
-      // retrieve that message to know who sent you that message,
-      // and save his/her identity where needed.
-      //...
-
       String content = (String)intent.getExtras().get("message");
       Message message = gson.fromJson(content,Message.class);
       globalState.user_to_talk_to = message.getUserSender();
@@ -76,12 +70,13 @@ public class e_MessagesActivity_3_broadcast_receiver extends Activity {
         //...
         String json = (String)arg1.getExtras().get("message");
         Message message = gson.fromJson(json, Message.class);
-        adapter.addMessage(message);
-        adapter.notifyDataSetChanged();
 
-        if (message.getUserSender() == globalState.user_to_talk_to)
+
+        if (message.getUserSender().getId().intValue() == globalState.user_to_talk_to.getId().intValue())
         {
           // Go to last message
+          adapter.addMessage(message);
+          adapter.notifyDataSetChanged();
           conversation.post(new Runnable() {
             @Override
             public void run() {
@@ -92,21 +87,9 @@ public class e_MessagesActivity_3_broadcast_receiver extends Activity {
         }
         else
         {
-          conversation.post(new Runnable(){
-            @Override
-            public void run(){
-              conversation.setSelection(conversation.getCount()-1);
-            }
-          });
           toastShow(message.getUserSender().getName().toString() + "told you" + message.getContent().toString());
-        }
-        // if the sender of the message is with whom I am talking now:
-        // add the message to the adapter
-        // notify a data change at the adapter
-        // make a ListView scroll to see the new message
-        // if not:
-        // show a popup window with sender and content of the received message.
 
+        }
       }
     };
     IntentFilter intentFilter = new IntentFilter("edu.upc.whatsapp.newMessage");
@@ -120,7 +103,6 @@ public class e_MessagesActivity_3_broadcast_receiver extends Activity {
   protected void onResume() {
     super.onResume();
     globalState.MessagesActivity_visible = true;
-    //...
 
   }
 
@@ -128,7 +110,6 @@ public class e_MessagesActivity_3_broadcast_receiver extends Activity {
   protected void onPause() {
     super.onPause();
     globalState.MessagesActivity_visible = false;
-    //...
 
   }
 
@@ -151,9 +132,6 @@ public class e_MessagesActivity_3_broadcast_receiver extends Activity {
     @Override
     protected List<Message> doInBackground(Integer... userIds) {
 
-      //...
-
-      //remove this sentence on completing the code:
       return RPC.retrieveMessages(globalState.my_user.getId(),globalState.user_to_talk_to.getId());
     }
 
@@ -188,7 +166,6 @@ public class e_MessagesActivity_3_broadcast_receiver extends Activity {
       }
       else
       {
-
         return RPC.retrieveNewMessages(globalState.my_user.getId(),globalState.user_to_talk_to.getId(),adapter.getLastMessage());
       }
     }
@@ -207,8 +184,6 @@ public class e_MessagesActivity_3_broadcast_receiver extends Activity {
             conversation.setSelection(conversation.getCount()-1);
           }
         });
-        //...
-
       }
     }
   }
@@ -240,10 +215,6 @@ public class e_MessagesActivity_3_broadcast_receiver extends Activity {
 
     @Override
     protected Boolean doInBackground(Message... messages) {
-
-      //...
-
-      //remove this sentence on completing the code:
       return RPC.postMessage(messages[0]);
     }
 
@@ -251,10 +222,7 @@ public class e_MessagesActivity_3_broadcast_receiver extends Activity {
     protected void onPostExecute(Boolean resultOk) {
       if (resultOk) {
         toastShow("message sent");
-
         new e_MessagesActivity_3_broadcast_receiver.fetchNewMessages_Task().execute(globalState.my_user.getId(),globalState.user_to_talk_to.getId());
-        //...
-
       } else {
         toastShow("There's been an error sending the message");
       }

@@ -230,11 +230,12 @@ public class PushService extends Service {
         intent.setAction("edu.upc.whatsapp.newMessage");
         intent.putExtra("message",content);
         sendBroadcast(intent);
-        if (message.getUserSender() != globalState.user_to_talk_to)
+
+        if (!globalState.MessagesActivity_visible || message.getUserSender().getId().intValue() != globalState.user_to_talk_to.getId().intValue())
         {
           sendPushNotification(PushService.this,message.getContent(),content);
         }
-        //...
+
       }
       else{
         toastShow(content);
