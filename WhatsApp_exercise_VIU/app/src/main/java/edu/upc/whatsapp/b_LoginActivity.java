@@ -74,6 +74,7 @@ public class b_LoginActivity extends Activity implements View.OnClickListener {
       if (userInfo.getId() >= 0) {
         toastShow("Login successful");
         globalState.my_user = userInfo;
+        globalState.save_my_user();
         startActivity(new Intent(b_LoginActivity.this, d_UsersListActivity.class));
         startService(new Intent(b_LoginActivity.this, PushService.class));
         finish();

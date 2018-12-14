@@ -35,7 +35,7 @@ public class d_UsersListActivity extends Activity implements ListView.OnItemClic
 
     //...
     globalState.user_to_talk_to = ((MyAdapter_users) l.getAdapter()).users.get(position);
-    startActivity(new Intent(this, e_MessagesActivity_3_broadcast_receiver.class));
+    startActivity(new Intent(this, e_MessagesActivity_4_broadcast_and_persistence.class));
   }
 
   private class DownloadUsers_Task extends AsyncTask<Void, Void, List<UserInfo>> {

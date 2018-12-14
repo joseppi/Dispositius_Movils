@@ -1,5 +1,7 @@
 package edu.upc.whatsapp;
 
+import edu.upc.whatsapp.comms.RPC;
+import edu.upc.whatsapp.adapter.MyAdapter_messages;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -23,41 +25,38 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
-
+import entity.Message;
 import java.util.Date;
 import java.util.List;
-
-import edu.upc.whatsapp.comms.RPC;
-import edu.upc.whatsapp.adapter.MyAdapter_messages;
-import entity.Message;
-import entity.UserInfo;
 
 import static edu.upc.whatsapp.comms.Comms.gson;
 
 public class e_MessagesActivity_4_broadcast_and_persistence extends Activity {
 
   _GlobalState globalState;
-  private BroadcastReceiver broadcastReceiver;
   ProgressDialog progressDialog;
   private ListView conversation;
   private MyAdapter_messages adapter;
   private EditText input_text;
   private Button button;
-  private InputMethodManager inMgr;
   private boolean enlarged = false, shrunk = true;
+
+  private BroadcastReceiver broadcastReceiver;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.e_messages);
     globalState = (_GlobalState) getApplication();
+    conversation = (ListView)findViewById(R.id.conversation);
 
-    //para cuando venimos de la notificacion de status-bar:
     Intent intent = getIntent();
-    if(intent.getExtras()!=null && intent.getExtras().get("message")!=null){
 
-      //...
-
+    if(intent.getExtras()!= null && intent.getExtras().get("message")!=null)
+    {
+      String content = (String)intent.getExtras().get("message");
+      Message message = gson.fromJson(content,Message.class);
+      globalState.user_to_talk_to = message.getUserSender();
     }
 
     TextView title = (TextView) findViewById(R.id.title);
@@ -69,37 +68,48 @@ public class e_MessagesActivity_4_broadcast_and_persistence extends Activity {
       public void onReceive(Context arg0, Intent arg1) {
 
         //...
+        String json = (String)arg1.getExtras().get("message");
+        Message message = gson.fromJson(json, Message.class);
 
+
+        if (message.getUserSender().getId().intValue() == globalState.user_to_talk_to.getId().intValue())
+        {
+          // Go to last message
+          adapter.addMessage(message);
+          adapter.notifyDataSetChanged();
+          conversation.post(new Runnable() {
+            @Override
+            public void run() {
+              conversation.setSelection(conversation.getCount() - 1);
+            }
+          });
+
+        }
+        else
+        {
+          toastShow(message.getUserSender().getName().toString() + "told you" + message.getContent().toString());
+
+        }
       }
     };
     IntentFilter intentFilter = new IntentFilter("edu.upc.whatsapp.newMessage");
     registerReceiver(broadcastReceiver, intentFilter);
 
-    if(globalState.isThere_messages()) {
+    new fetchAllMessages_Task().execute(globalState.my_user.getId(), globalState.user_to_talk_to.getId());
 
-      //...
-
-    }
-    else{
-
-      //...
-
-    }
   }
 
   @Override
   protected void onResume() {
     super.onResume();
-
-    //...
+    globalState.MessagesActivity_visible = true;
 
   }
 
   @Override
   protected void onPause() {
     super.onPause();
-
-    //...
+    globalState.MessagesActivity_visible = false;
 
   }
 
@@ -116,16 +126,13 @@ public class e_MessagesActivity_4_broadcast_and_persistence extends Activity {
     @Override
     protected void onPreExecute() {
       progressDialog = ProgressDialog.show(e_MessagesActivity_4_broadcast_and_persistence.this,
-          "MessagesActivity", "downloading messages...");
+              "MessagesActivity", "downloading messages...");
     }
 
     @Override
     protected List<Message> doInBackground(Integer... userIds) {
 
-      //...
-
-      //remove this sentence on completing the code:
-      return null;
+      return RPC.retrieveMessages(globalState.my_user.getId(),globalState.user_to_talk_to.getId());
     }
 
     @Override
@@ -135,9 +142,15 @@ public class e_MessagesActivity_4_broadcast_and_persistence extends Activity {
         toastShow("There's been an error downloading the messages");
       } else {
         toastShow(all_messages.size()+" messages downloaded");
-
-        //...
-
+        adapter = new MyAdapter_messages(e_MessagesActivity_4_broadcast_and_persistence.this,all_messages,globalState.my_user);
+        ListView listView = (ListView) findViewById(R.id.conversation);
+        listView.setAdapter(adapter);
+        conversation.post(new Runnable(){
+          @Override
+          public void run(){
+            conversation.setSelection(conversation.getCount()-1);
+          }
+        });
       }
     }
   }
@@ -147,10 +160,14 @@ public class e_MessagesActivity_4_broadcast_and_persistence extends Activity {
     @Override
     protected List<Message> doInBackground(Integer... userIds) {
 
-      //...
-
-      //remove this sentence on completing the code:
-      return null;
+      if (adapter.isEmpty())
+      {
+        return RPC.retrieveMessages(globalState.my_user.getId(),globalState.user_to_talk_to.getId());
+      }
+      else
+      {
+        return RPC.retrieveNewMessages(globalState.my_user.getId(),globalState.user_to_talk_to.getId(),adapter.getLastMessage());
+      }
     }
 
     @Override
@@ -159,9 +176,14 @@ public class e_MessagesActivity_4_broadcast_and_persistence extends Activity {
         toastShow("There's been an error downloading new messages");
       } else {
         toastShow(new_messages.size()+" new message/s downloaded");
-
-        //...
-
+        adapter.addMessages(new_messages);
+        adapter.notifyDataSetChanged();
+        conversation.post(new Runnable(){
+          @Override
+          public void run(){
+            conversation.setSelection(conversation.getCount()-1);
+          }
+        });
       }
     }
   }
@@ -169,6 +191,14 @@ public class e_MessagesActivity_4_broadcast_and_persistence extends Activity {
   public void sendText(final View view) {
 
     //...
+
+    Message message = new Message();
+
+    message.setContent(input_text.getText().toString());
+    message.setUserReceiver(globalState.user_to_talk_to);
+    message.setUserSender(globalState.my_user);
+    message.setDate(new Date());
+    new e_MessagesActivity_4_broadcast_and_persistence.SendMessage_Task().execute(message);
 
     input_text.setText("");
 
@@ -185,20 +215,14 @@ public class e_MessagesActivity_4_broadcast_and_persistence extends Activity {
 
     @Override
     protected Boolean doInBackground(Message... messages) {
-
-      //...
-
-      //remove this sentence on completing the code:
-      return false;
+      return RPC.postMessage(messages[0]);
     }
 
     @Override
     protected void onPostExecute(Boolean resultOk) {
       if (resultOk) {
         toastShow("message sent");
-
-        //...
-
+        new e_MessagesActivity_4_broadcast_and_persistence.fetchNewMessages_Task().execute(globalState.my_user.getId(),globalState.user_to_talk_to.getId());
       } else {
         toastShow("There's been an error sending the message");
       }

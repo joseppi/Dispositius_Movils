@@ -59,12 +59,12 @@ ADDED from C:\Users\josepps14\Documents\GitHub\Dispositius_Movils\WhatsApp_exerc
 		ADDED from C:\Users\josepps14\Documents\GitHub\Dispositius_Movils\WhatsApp_exercise_VIU\app\src\main\AndroidManifest.xml:19:18-60
 	android:name
 		ADDED from C:\Users\josepps14\Documents\GitHub\Dispositius_Movils\WhatsApp_exercise_VIU\app\src\main\AndroidManifest.xml:16:18-46
-activity#edu.upc.whatsapp.a_WelcomeActivity
+activity#edu.upc.whatsapp.a_WelcomeActivity_persistence
 ADDED from C:\Users\josepps14\Documents\GitHub\Dispositius_Movils\WhatsApp_exercise_VIU\app\src\main\AndroidManifest.xml:21:9-27:20
 	android:label
 		ADDED from C:\Users\josepps14\Documents\GitHub\Dispositius_Movils\WhatsApp_exercise_VIU\app\src\main\AndroidManifest.xml:22:19-51
 	android:name
-		ADDED from C:\Users\josepps14\Documents\GitHub\Dispositius_Movils\WhatsApp_exercise_VIU\app\src\main\AndroidManifest.xml:21:19-52
+		ADDED from C:\Users\josepps14\Documents\GitHub\Dispositius_Movils\WhatsApp_exercise_VIU\app\src\main\AndroidManifest.xml:21:19-64
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
 ADDED from C:\Users\josepps14\Documents\GitHub\Dispositius_Movils\WhatsApp_exercise_VIU\app\src\main\AndroidManifest.xml:23:13-26:29
 action#android.intent.action.MAIN
