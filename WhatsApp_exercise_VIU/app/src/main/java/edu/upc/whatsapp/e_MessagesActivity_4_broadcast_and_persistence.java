@@ -40,6 +40,7 @@ public class e_MessagesActivity_4_broadcast_and_persistence extends Activity {
   private EditText input_text;
   private Button button;
   private boolean enlarged = false, shrunk = true;
+  private List<Message> all_messages_local;
 
   private BroadcastReceiver broadcastReceiver;
 
@@ -50,12 +51,14 @@ public class e_MessagesActivity_4_broadcast_and_persistence extends Activity {
     globalState = (_GlobalState) getApplication();
     conversation = (ListView)findViewById(R.id.conversation);
 
+
     Intent intent = getIntent();
 
     if(intent.getExtras()!= null && intent.getExtras().get("message")!=null)
     {
       String content = (String)intent.getExtras().get("message");
       Message message = gson.fromJson(content,Message.class);
+      globalState.save_new_message(message);
       globalState.user_to_talk_to = message.getUserSender();
     }
 
@@ -71,31 +74,54 @@ public class e_MessagesActivity_4_broadcast_and_persistence extends Activity {
         String json = (String)arg1.getExtras().get("message");
         Message message = gson.fromJson(json, Message.class);
 
-
         if (message.getUserSender().getId().intValue() == globalState.user_to_talk_to.getId().intValue())
         {
-          // Go to last message
+
           adapter.addMessage(message);
           adapter.notifyDataSetChanged();
+          // Go to last message
           conversation.post(new Runnable() {
             @Override
             public void run() {
               conversation.setSelection(conversation.getCount() - 1);
             }
           });
-
         }
         else
         {
-          toastShow(message.getUserSender().getName().toString() + "told you" + message.getContent().toString());
-
+          toastShow(message.getUserSender().getName().toString() + "told you: " + message.getContent().toString());
         }
       }
     };
     IntentFilter intentFilter = new IntentFilter("edu.upc.whatsapp.newMessage");
     registerReceiver(broadcastReceiver, intentFilter);
+    if (globalState.isThere_messages())
+    {
+      //Load saved Messages
+      all_messages_local = globalState.load_messages();
 
-    new fetchAllMessages_Task().execute(globalState.my_user.getId(), globalState.user_to_talk_to.getId());
+      if (all_messages_local == null) {
+        toastShow("There's been an error loading the messages");
+      } else {
+        toastShow(all_messages_local.size()+" messages loaded");
+        adapter = new MyAdapter_messages(e_MessagesActivity_4_broadcast_and_persistence.this,all_messages_local,globalState.my_user);
+        ListView listView = (ListView) findViewById(R.id.conversation);
+        listView.setAdapter(adapter);
+        conversation.post(new Runnable(){
+          @Override
+          public void run(){
+            conversation.setSelection(conversation.getCount()-1);
+          }
+        });
+        new fetchNewMessages_Task().execute(globalState.my_user.getId(), globalState.user_to_talk_to.getId());
+      }
+    }
+    else
+    {
+      new fetchAllMessages_Task().execute(globalState.my_user.getId(), globalState.user_to_talk_to.getId());
+
+    }
+
 
   }
 
@@ -141,6 +167,7 @@ public class e_MessagesActivity_4_broadcast_and_persistence extends Activity {
       if (all_messages == null) {
         toastShow("There's been an error downloading the messages");
       } else {
+        globalState.save_new_messages(all_messages);
         toastShow(all_messages.size()+" messages downloaded");
         adapter = new MyAdapter_messages(e_MessagesActivity_4_broadcast_and_persistence.this,all_messages,globalState.my_user);
         ListView listView = (ListView) findViewById(R.id.conversation);
@@ -176,6 +203,7 @@ public class e_MessagesActivity_4_broadcast_and_persistence extends Activity {
         toastShow("There's been an error downloading new messages");
       } else {
         toastShow(new_messages.size()+" new message/s downloaded");
+        globalState.save_new_messages(new_messages);
         adapter.addMessages(new_messages);
         adapter.notifyDataSetChanged();
         conversation.post(new Runnable(){

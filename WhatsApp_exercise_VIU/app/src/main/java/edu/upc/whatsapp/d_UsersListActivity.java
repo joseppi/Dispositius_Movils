@@ -64,10 +64,9 @@ public class d_UsersListActivity extends Activity implements ListView.OnItemClic
       } else {
 
         //...
+
+        users.remove(globalState.my_user);
         adapter = new MyAdapter_users(d_UsersListActivity.this,users);
-
-        adapter.users.remove(globalState.my_user);
-
         ListView listView = (ListView) findViewById(R.id.listView);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(d_UsersListActivity.this);

@@ -245,7 +245,7 @@ public class PushService extends Service {
   
   private void sendPushNotification(Context context, String content, String json_msg){
 
-    Intent mIntent = new Intent(context, e_MessagesActivity_3_broadcast_receiver.class);
+    Intent mIntent = new Intent(context, e_MessagesActivity_4_broadcast_and_persistence.class);
     mIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     //con esto MessagesActivity obtiene con quien estoy hablando
     //al entrar en dicha pantalla:
